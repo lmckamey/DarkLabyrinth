@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 
     public GameObject m_goal = null;
 
-    [SerializeField] GameObject m_crosshair = null;
     [SerializeField] GameObject m_hintArrow = null;
     [SerializeField] GameObject m_tryAgainMenu = null;
     [SerializeField] GameObject m_winMenu = null;
@@ -19,6 +18,8 @@ public class Player : MonoBehaviour
     [SerializeField] Text m_AmmoUI = null;
     [SerializeField] Text m_KeysUI = null;
     [SerializeField] Text m_HUDText = null;
+    [SerializeField] ParticleSystem m_LeftHeadLightning;
+    [SerializeField] ParticleSystem m_RightHeadLightning;
 
 
 
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     private float m_attackTimer = 0.0f;
     private float m_attackTime = 0.5f;
     private AudioSource m_audioSource = null;
+    private Color m_baseLightningColor;
 
     public bool HasKey()
     {
@@ -52,6 +54,7 @@ public class Player : MonoBehaviour
         m_rigidbody = gameObject.GetComponent<Rigidbody>();
         m_AmmoUI.text = m_numOfCharges + "/" + m_maxNumOfCharges;
         m_audioSource = GetComponent<AudioSource>();
+        m_baseLightningColor = m_RightHeadLightning.startColor;
     }
 
     void Update()
@@ -108,7 +111,8 @@ public class Player : MonoBehaviour
             }
             if (Input.GetButton("Fire2"))
             {
-                m_crosshair.SetActive(true);
+                m_LeftHeadLightning.startColor = Color.yellow;
+                m_RightHeadLightning.startColor = Color.yellow;
                 if (Input.GetButtonDown("Fire1") && m_numOfCharges > 0)
                 {
 
@@ -119,7 +123,7 @@ public class Player : MonoBehaviour
 
                     Physics.Raycast(transform.position, transform.forward, out hit);
                     m_numOfCharges--;
-                    Instantiate(m_hitParticle, hit.point, Quaternion.identity);
+                    Destroy(Instantiate(m_hitParticle, hit.point, Quaternion.identity),1.0f);
 
                     if (hit.collider.gameObject.tag == "Guard")
                     {
@@ -129,7 +133,8 @@ public class Player : MonoBehaviour
             }
             else
             {
-                m_crosshair.SetActive(false);
+                m_LeftHeadLightning.startColor = m_baseLightningColor;
+                m_RightHeadLightning.startColor = m_baseLightningColor;
             }
         }
 
